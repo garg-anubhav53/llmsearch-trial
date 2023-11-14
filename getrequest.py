@@ -53,11 +53,16 @@ def get_main_HTML(inputHTML):
 def run_GPT_request(html, searchterms):
 	client = openai.OpenAI()
 
-	request_message = f"""Please take the following HTML output and summarize the webpage text 
+	request_instructions = f"""Please take the following HTML output and summarize the webpage text 
 	that has to do with the content for the user's search terms: {searchterms}. Here is the HTML to
 	summarize for those search terms: {html}
 	 """
-	summary_response = client.chat.completions.create(model="gpt-3.5-turbo", messages=request_message, max_tokens=10000)
+
+	request_messages = [
+    {"role": "system", "content": "You are a helpful assistant that is an expert at parsing complicated HTML and extracting the essential/meaningful portions for a given topic."},
+    {"role": "user", "content": request_instructions}
+    ]
+	summary_response = client.chat.completions.create(model="gpt-3.5-turbo-1106", messages=request_messages)
 	LLMSummary_Result = summary_response.choices[0].message.content
 	print("This is the answer back from search result: " + LLMSummary_Result)
 
